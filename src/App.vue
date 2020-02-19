@@ -86,17 +86,17 @@
     data() {
       return {
         clockRadius,
-        secondRadius: 350,
-        minuteRadius: 350,
-        hourRadius: 200,
+        secondRadius: 380,
+        minuteRadius: 370,
+        hourRadius: 230,
         centerRadius: 100,
         pointLength: 100,
         slowAnimationDuration: 2000,
         fastAnimationDuration: 500,
 
-        notchOuter: 450,
-        notchInner: 400,
-        numbersRadius: 480,
+        notchOuter: 470,
+        notchInner: 420,
+        numbersRadius: 500,
 
         ms: 0,
 
@@ -239,7 +239,7 @@
   }
 
   .svg-wrapper {
-    padding: 50px;
+    padding: 50px 30px
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -267,7 +267,7 @@
       stroke-width 7
 
     .text
-      font-size 15px
+      font-size 18px
 
     .secondary
       stroke-width 1
