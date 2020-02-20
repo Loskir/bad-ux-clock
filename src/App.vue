@@ -451,54 +451,14 @@
       .arrow, .notch, .text
         stroke #1f1f1f
 
-      .secondary
-        stroke #999999
-
-    .footer
-      background white
-
-  .flat-white
-    .svg
-      .clock
-        fill white
-        stroke none
-
-      .center
-        fill #303030
-
-      .arrow, .notch, .text
-        stroke #1f1f1f
+      .text
+        fill #1f1f1f
 
       .secondary
         stroke #999999
 
     .footer
       background white
-
-  .flat-black
-    background-color black
-    color white
-
-    .svg
-      .clock
-        fill none
-        stroke none
-
-      .center
-        fill #fafafa
-
-      .arrow, .notch, .text
-        stroke white
-
-      .secondary
-        stroke #808080
-
-    .footer
-      background black
-
-    select
-      color white
-      background-color black
 
   .black
     background-color black
@@ -513,6 +473,9 @@
 
       .arrow, .notch, .text
         stroke white
+
+      .text
+        fill white
 
       .secondary
         stroke #808080
