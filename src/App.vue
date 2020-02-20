@@ -16,8 +16,8 @@
       </svg>
     </div>
     <footer class="footer">
-      <span>Made with ❤️ by <a href="https://loskir.ru" target="_blank">@Loskir</a></span>
-      <span><a href="https://github.com/Loskir/bad-ux-clock" target="_blank">GitHub</a></span>
+      <span>Made by @GooRoo</span>
+      <span><a href="https://github.com/GooRoo/pendulum-clock" target="_blank">GitHub</a></span>
     </footer>
 
     <div class="theme-switcher">
@@ -105,9 +105,8 @@
         Point,
         Vector,
 
-        numbers: Array.from({length: 60}, (_, i) => [Math.random(), i])
-          .sort((a, b) => a[0] - b[0])
-          .map((a) => a[1]),
+        numbers: Array.from({length: 30}, (_, i) => 1 + i * 2)
+          .concat(Array.from({length: 30}, (_, i) => 60 - i * 2)),
 
         secondAngle: 0,
         minuteAngle: 0,
