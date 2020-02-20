@@ -2,7 +2,7 @@
   <div id="app" :class="darkTheme ? 'black' : 'default'">
     <div class="svg-wrapper">
       <svg class="svg" viewBox="-10 -10 1020 1020">
-        <VectorLine v-for="i in 12" class="notch" :vector="getNotchVector((i-1)/12 * 2*Math.PI)"/>
+        <VectorLine v-for="i in 12" :key="i" class="notch" :vector="getNotchVector((i-1)/12 * 2*Math.PI)"/>
 
         <text class="text" v-for="(n, i) in numbers" :x="getTextPosition(i).normalize().x" :y="getTextPosition(i).normalize().y"
               text-anchor="middle" alignment-baseline="central">
@@ -107,22 +107,22 @@
 
         numbers: Array.from({length: 60}, (_, i) => [Math.random(), i])
           .sort((a, b) => a[0] - b[0])
-          .map((a) => a[1])
+          .map((a) => a[1]),
+
+        secondAngle: 0,
+        minuteAngle: 0,
+        hourAngle: 0,
       }
     },
     methods: {
       startInterval() {
-        clearTimeout(this.timeTimeout)
-        if (!this.devMenuOpened) {
-          this.updateTime()
-        }
+        this.updateTime()
       },
       updateTime() {
-        if (!this.devMenuOpened) {
-          this.ms = Date.now() % 86400000 - new Date().getTimezoneOffset() * 60000
+        const date = new Date()
+        this.ms = Date.now() % 86400000 - date.getTimezoneOffset() * 60000
 
-          requestAnimationFrame(this.updateTime)
-        }
+        setTimeout(() => this.updateTime(), 1000 - date.getMilliseconds())
       },
       normalizePosition(pos) {
         let c = this.clockRadius
@@ -153,27 +153,27 @@
       hour() {
         return Math.floor(this.ms / 3600000 % 24)
       },
-      secondAngle() {
+      realSecondAngle() {
         return this.numberToIndex[this.second] / 30 * Math.PI
       },
-      minuteAngle() {
+      realMinuteAngle() {
         return this.numberToIndex[this.minute] / 30 * Math.PI
       },
-      hourAngle() {
+      realHourAngle() {
         return this.numberToIndex[this.hour] / 30 * Math.PI
       },
       secondPoint() {
-        let a = this.secondAngle
+        let a = this.secondAngleT
         let r = this.secondRadius
         return new Point(r * Math.sin(a), r * Math.cos(a))
       },
       minutePoint() {
-        let a = this.minuteAngle
+        let a = this.minuteAngleT
         let r = this.minuteRadius
         return new Point(r * Math.sin(a), r * Math.cos(a))
       },
       hourPoint() {
-        let a = this.hourAngle
+        let a = this.hourAngleT
         let r = this.hourRadius
         return new Point(r * Math.sin(a), r * Math.cos(a))
       },
@@ -192,12 +192,87 @@
         return o
       }
     },
-    watch: {
-      devMenuOpened(val) {
-        if (!val) {
-          this.startInterval()
+    tweened: {
+      secondAngleT: {
+        get() {
+          return this.secondAngle
+        },
+        duration() {
+          return 400;
+        },
+        easing(t) {
+          return t * (2 - t);
+        }
+      },
+      minuteAngleT: {
+        get() {
+          return this.minuteAngle
+        },
+        duration() {
+          return 400;
+        },
+        easing(t) {
+          return t * (2 - t);
+        }
+      },
+      hourAngleT: {
+        get() {
+          return this.hourAngle
+        },
+        duration() {
+          return 400;
+        },
+        easing(t) {
+          return t * (2 - t);
         }
       }
+    },
+    watch: {
+      realSecondAngle(v) {
+        const pi2 = (Math.PI * 2)
+        const secondAngleNormalized = (this.secondAngle % pi2 + pi2) % pi2
+        const fullTurns = Math.floor(this.secondAngle / pi2)
+        console.log(this.secondAngle, v, secondAngleNormalized, fullTurns)
+        if (secondAngleNormalized - v > Math.PI) {
+          this.secondAngle = (fullTurns + 1) * pi2 + v
+        }
+        else if (v - secondAngleNormalized > Math.PI) {
+          this.secondAngle = (fullTurns - 1) * pi2 + v
+        }
+        else {
+          this.secondAngle = fullTurns * pi2 + v
+        }
+      },
+      realMinuteAngle(v) {
+        const pi2 = (Math.PI * 2)
+        const minuteAngleNormalized = (this.minuteAngle % pi2 + pi2) % pi2
+        const fullTurns = Math.floor(this.minuteAngle / pi2)
+        console.log(this.minuteAngle, v, minuteAngleNormalized, fullTurns)
+        if (minuteAngleNormalized - v > Math.PI) {
+          this.minuteAngle = (fullTurns + 1) * pi2 + v
+        }
+        else if (v - minuteAngleNormalized > Math.PI) {
+          this.minuteAngle = (fullTurns - 1) * pi2 + v
+        }
+        else {
+          this.minuteAngle = fullTurns * pi2 + v
+        }
+      },
+      realHourAngle(v) {
+        const pi2 = (Math.PI * 2)
+        const hourAngleNormalized = (this.hourAngle % pi2 + pi2) % pi2
+        const fullTurns = Math.floor(this.hourAngle / pi2)
+        console.log(this.hourAngle, v, hourAngleNormalized, fullTurns)
+        if (hourAngleNormalized - v > Math.PI) {
+          this.hourAngle = (fullTurns + 1) * pi2 + v
+        }
+        else if (v - hourAngleNormalized > Math.PI) {
+          this.hourAngle = (fullTurns - 1) * pi2 + v
+        }
+        else {
+          this.hourAngle = fullTurns * pi2 + v
+        }
+      },
     },
     mounted() {
       this.updateTime()

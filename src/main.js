@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
+import VueTween from '@seregpie/vuetween'
 
-Vue.config.productionTip = false;
+Vue.use(VueTween)
+
+Vue.config.productionTip = false
 
 new Vue({
   render: function (h) { return h(App) },

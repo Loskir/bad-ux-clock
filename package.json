@@ -7,9 +7,10 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "vue": "^2.5.17",
+    "@seregpie/vuetween": "^18.10.25",
     "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2"
+    "stylus-loader": "^3.0.2",
+    "vue": "^2.5.17"
   },
   "devDependencies": {
     "@vue/cli-service": "^3.0.3",
