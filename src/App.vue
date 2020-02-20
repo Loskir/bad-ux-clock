@@ -232,7 +232,6 @@
         const pi2 = (Math.PI * 2)
         const secondAngleNormalized = (this.secondAngle % pi2 + pi2) % pi2
         const fullTurns = Math.floor(this.secondAngle / pi2)
-        console.log(this.secondAngle, v, secondAngleNormalized, fullTurns)
         if (secondAngleNormalized - v > Math.PI) {
           this.secondAngle = (fullTurns + 1) * pi2 + v
         }
@@ -247,7 +246,6 @@
         const pi2 = (Math.PI * 2)
         const minuteAngleNormalized = (this.minuteAngle % pi2 + pi2) % pi2
         const fullTurns = Math.floor(this.minuteAngle / pi2)
-        console.log(this.minuteAngle, v, minuteAngleNormalized, fullTurns)
         if (minuteAngleNormalized - v > Math.PI) {
           this.minuteAngle = (fullTurns + 1) * pi2 + v
         }
@@ -262,7 +260,6 @@
         const pi2 = (Math.PI * 2)
         const hourAngleNormalized = (this.hourAngle % pi2 + pi2) % pi2
         const fullTurns = Math.floor(this.hourAngle / pi2)
-        console.log(this.hourAngle, v, hourAngleNormalized, fullTurns)
         if (hourAngleNormalized - v > Math.PI) {
           this.hourAngle = (fullTurns + 1) * pi2 + v
         }
