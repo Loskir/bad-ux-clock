@@ -105,8 +105,8 @@
         Point,
         Vector,
 
-        numbers: Array.from({length: 30}, (_, i) => 1 + i * 2)
-          .concat(Array.from({length: 30}, (_, i) => 60 - i * 2)),
+        numbers: Array.from({length: 30}, (_, i) => i * 2)
+          .concat(Array.from({length: 30}, (_, i) => 59 - i * 2)),
 
         secondAngle: 0,
         minuteAngle: 0,
