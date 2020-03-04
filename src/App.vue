@@ -21,17 +21,18 @@
     </footer>
 
     <div class="theme-switcher">
-      <label>
-        <input type="checkbox" v-model="darkTheme"/>
-        <div class="checkbox__content">
-          <div class="checkbox__content-inner">
-            <svg class="checkbox__content-inner-svg" v-if="darkTheme" viewBox="0 0 312.812 312.812">
+      <label class="switch">
+        <span class="switch__label">Theme</span>
+        <input class="switch__input" type="checkbox" v-model="darkTheme"/>
+        <div class="switch__content">
+          <div class="switch__content-inner">
+            <svg class="switch__content-inner-svg" v-if="darkTheme" viewBox="0 0 312.812 312.812">
               <path d="M305.2,178.159c-3.2-0.8-6.4,0-9.2,2c-10.4,8.8-22.4,16-35.6,20.8c-12.4,4.8-26,7.2-40.4,7.2c-32.4,0-62-13.2-83.2-34.4
                 c-21.2-21.2-34.4-50.8-34.4-83.2c0-13.6,2.4-26.8,6.4-38.8c4.4-12.8,10.8-24.4,19.2-34.4c3.6-4.4,2.8-10.8-1.6-14.4
                 c-2.8-2-6-2.8-9.2-2c-34,9.2-63.6,29.6-84.8,56.8c-20.4,26.8-32.4,60-32.4,96c0,43.6,17.6,83.2,46.4,112s68,46.4,112,46.4
                 c36.8,0,70.8-12.8,98-34c27.6-21.6,47.6-52.4,56-87.6C314,184.959,310.8,179.359,305.2,178.159z"/>
             </svg>
-            <svg class="checkbox__content-inner-svg" v-else viewBox="0 0 45.16 45.16">
+            <svg class="switch__content-inner-svg" v-else viewBox="0 0 45.16 45.16">
                 <path d="M22.58,11.269c-6.237,0-11.311,5.075-11.311,11.312s5.074,11.312,11.311,11.312c6.236,0,11.311-5.074,11.311-11.312 S28.816,11.269,22.58,11.269z"/>
                 <path d="M22.58,7.944c-1.219,0-2.207-0.988-2.207-2.206V2.207C20.373,0.988,21.361,0,22.58,0c1.219,0,2.207,0.988,2.207,2.207 v3.531C24.787,6.956,23.798,7.944,22.58,7.944z"/>
                 <path d="M22.58,37.215c-1.219,0-2.207,0.988-2.207,2.207v3.53c0,1.22,0.988,2.208,2.207,2.208c1.219,0,2.207-0.988,2.207-2.208 v-3.53C24.787,38.203,23.798,37.215,22.58,37.215z"/>
@@ -45,7 +46,6 @@
 
           </div>
         </div>
-        Toggle
       </label>
     </div>
   </div>
@@ -298,42 +298,83 @@
   *
     box-sizing border-box
 
-  body {
-    margin: 0;
-  }
+  body
+    margin 0
+
+  .switch
+    display flex
+    flex-direction row
+    align-items center
+
+  .switch__input
+    height 0
+    width 0
+    visibility hidden
+    margin 0
+    position absolute
+
+  .switch__label
+    padding-right 5px
+
+  .switch__content
+    cursor pointer
+    width 40px
+    height 21px
+    display block
+    border-radius 100px
+    position relative
+
+  .switch__content-inner
+    position absolute
+    top 3px
+    left 3px
+    width 15px
+    height 15px
+    border-radius 90px
+    transition left .3s, transform .3s, width .3s
+
+    display flex
+    flex-direction row
+    justify-content center
+
+  .switch__content-inner-svg
+    padding 2px
+    width 100%
+    height 100%
+
+  .switch__input:checked + .switch__content .switch__content-inner
+    left calc(100% - 3px)
+    transform translateX(-100%)
+
+  .switch:active .switch__content-inner
+    width 20px
 
   #app
-    font-family: monospace;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    font-family monospace
+    display flex
+    flex-direction column
+    justify-content center
+    align-items center
+    height 100vh
+    overflow hidden
 
-    select
-      font-family monospace
+  a
+    color #007bff
+    text-decoration none
+    transition .2s
 
-  a {
-    color: #007bff;
-    text-decoration: none;
-    transition: .2s;
+    &:hover
+      color #0056b3
 
-    &:hover {
-      color: #0056b3
-    }
-  }
-
-  .svg-wrapper {
-    padding: 50px 30px
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-  }
+  .svg-wrapper
+    padding 50px 30px
+    width 100%
+    height 100%
+    box-sizing border-box
 
   .svg
-    max-width: 100%;
-    max-height: 100%;
+    max-width 100%
+    max-height 100%
 
     .clock
       stroke-width 10
@@ -360,84 +401,21 @@
       stroke-linecap round
 
   .footer
-    position: absolute;
-    z-index: 100;
-    width: 100%;
-    bottom: 0;
-    padding: 15px 50px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-  select
-    border none
+    position absolute
+    z-index 100
+    width 100%
+    bottom 0
+    padding 15px 50px
+    box-sizing border-box
+    display flex
+    flex-direction row
+    justify-content space-between
 
   .theme-switcher
     position fixed
     right 0
     top 0
     padding 20px
-    input[type=checkbox]{
-      height: 0;
-      width: 0;
-      visibility: hidden;
-      margin 0
-      position absolute
-    }
-
-    label
-      font-size 0
-
-    .checkbox__content {
-      cursor: pointer;
-      width: 80px;
-      height: 40px;
-      background: #d5d8dd;
-      display: block;
-      border-radius: 100px;
-      position: relative;
-    }
-
-    .checkbox__content-inner {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      width: 30px;
-      height: 30px;
-      background: #fff;
-      border-radius: 90px;
-      transition: left 0.3s, transform .3s, width .3s;
-
-      display flex
-      flex-direction row
-      justify-content center
-    }
-
-    .checkbox__content-inner-svg
-      padding 4px
-      width: 30px;
-      height: 30px;
-      fill #d5d8dd
-
-    input:checked + .checkbox__content
-      background: #22252a;
-
-      .checkbox__content-inner {
-        background: black;
-      }
-
-      .checkbox__content-inner-svg
-        fill #22252a
-
-    input:checked + .checkbox__content .checkbox__content-inner {
-      left: calc(100% - 5px);
-      transform: translateX(-100%);
-    }
-
-    .checkbox__content:active .checkbox__content-inner {
-      width: 40px;
-    }
 
   .default
     .svg
@@ -459,6 +437,15 @@
 
     .footer
       background white
+
+    .switch__content
+      background black
+
+    .switch__content-inner
+      background #fff
+
+    .switch__content-inner-svg
+      fill black
 
   .black
     background-color black
@@ -483,7 +470,12 @@
     .footer
       background black
 
-    select
-      color white
-      background-color black
+    .switch__content
+      background white
+
+    .switch__content-inner
+      background black
+
+    .switch__content-inner-svg
+      fill white
 </style>
