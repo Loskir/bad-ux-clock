@@ -4,9 +4,15 @@
       <svg class="svg" viewBox="-10 -10 1020 1020">
         <VectorLine v-for="i in 12" :key="i" class="notch" :vector="getNotchVector((i-1)/12 * 2*Math.PI)"/>
 
-        <text class="text" v-for="(n, i) in numbers" :x="getTextPosition(i).normalize().x" :y="getTextPosition(i).normalize().y"
-              text-anchor="middle" alignment-baseline="central">
-          {{n}}
+        <text
+          class="text"
+          v-for="(n, i) in numberAnglesT"
+          :x="getNumberPosition(n).normalize().x"
+          :y="getNumberPosition(n).normalize().y"
+          :key="'number_'+i"
+          text-anchor="middle"
+          alignment-baseline="central">
+          {{i}}
         </text>
 
         <VectorLine class="arrow second-arrow" :vector="new Vector(new Point(0, 0), this.secondPoint)"/>
@@ -20,8 +26,8 @@
       <span><a href="https://github.com/Loskir/bad-ux-clock" target="_blank">GitHub</a></span>
     </footer>
 
-    <div class="theme-switcher">
-      <label class="switch">
+    <div class="settings">
+      <label class="switch settings__item">
         <span class="switch__label">Theme</span>
         <input class="switch__input" type="checkbox" v-model="darkTheme"/>
         <div class="switch__content">
@@ -47,6 +53,15 @@
           </div>
         </div>
       </label>
+      <label class="settings__item">
+        Reshuffle
+        <select v-model="reshuffle">
+          <option value="no">no</option>
+          <option value="1h">every hour</option>
+          <option value="1m">every minute</option>
+          <option value="1s">every second</option>
+        </select>
+      </label>
     </div>
   </div>
 </template>
@@ -68,6 +83,9 @@
     normalize() {
       return new Point(clockRadius + this.x, clockRadius - this.y)
     }
+    toArray() {
+      return [this.x, this.y]
+    }
   }
 
   class Vector {
@@ -76,6 +94,10 @@
       this.end = end
     }
   }
+
+  const getNumbers = () => Array.from({length: 60}, (_, i) => [Math.random(), i])
+    .sort((a, b) => a[0] - b[0])
+    .map((a) => a[1])
 
   export default {
     name: 'app',
@@ -105,13 +127,14 @@
         Point,
         Vector,
 
-        numbers: Array.from({length: 60}, (_, i) => [Math.random(), i])
-          .sort((a, b) => a[0] - b[0])
-          .map((a) => a[1]),
+        numberIndexes: getNumbers(),
+        numberAngles: [],
 
         secondAngle: 0,
         minuteAngle: 0,
         hourAngle: 0,
+
+        reshuffle: 'no',
       }
     },
     methods: {
@@ -142,48 +165,36 @@
         const r = this.numbersRadius
         return new Point(r * Math.sin(angle), r * Math.cos(angle))
       },
+      getNumberPosition(angle) {
+        const r = this.numbersRadius
+        return new Point(r * Math.sin(angle), r * Math.cos(angle))
+      },
+
+      getFancyRotatingAngle(oldValue, newValue) {
+        const pi2 = (Math.PI * 2)
+        const angleNormalized = (oldValue % pi2 + pi2) % pi2
+        const fullTurns = Math.floor(oldValue / pi2)
+        if (angleNormalized - newValue > Math.PI) {
+          return (fullTurns + 1) * pi2 + newValue
+        }
+        if (newValue - angleNormalized > Math.PI) {
+          return (fullTurns - 1) * pi2 + newValue
+        }
+        return fullTurns * pi2 + newValue
+      },
 
       updateSecondAngle(v) {
-        const pi2 = (Math.PI * 2)
-        const secondAngleNormalized = (this.secondAngle % pi2 + pi2) % pi2
-        const fullTurns = Math.floor(this.secondAngle / pi2)
-        if (secondAngleNormalized - v > Math.PI) {
-          this.secondAngle = (fullTurns + 1) * pi2 + v
-        }
-        else if (v - secondAngleNormalized > Math.PI) {
-          this.secondAngle = (fullTurns - 1) * pi2 + v
-        }
-        else {
-          this.secondAngle = fullTurns * pi2 + v
-        }
+        this.secondAngle = this.getFancyRotatingAngle(this.secondAngle, v)
       },
       updateMinuteAngle(v) {
-        const pi2 = (Math.PI * 2)
-        const minuteAngleNormalized = (this.minuteAngle % pi2 + pi2) % pi2
-        const fullTurns = Math.floor(this.minuteAngle / pi2)
-        if (minuteAngleNormalized - v > Math.PI) {
-          this.minuteAngle = (fullTurns + 1) * pi2 + v
-        }
-        else if (v - minuteAngleNormalized > Math.PI) {
-          this.minuteAngle = (fullTurns - 1) * pi2 + v
-        }
-        else {
-          this.minuteAngle = fullTurns * pi2 + v
-        }
+        this.minuteAngle = this.getFancyRotatingAngle(this.minuteAngle, v)
       },
       updateHourAngle(v) {
-        const pi2 = (Math.PI * 2)
-        const hourAngleNormalized = (this.hourAngle % pi2 + pi2) % pi2
-        const fullTurns = Math.floor(this.hourAngle / pi2)
-        if (hourAngleNormalized - v > Math.PI) {
-          this.hourAngle = (fullTurns + 1) * pi2 + v
-        }
-        else if (v - hourAngleNormalized > Math.PI) {
-          this.hourAngle = (fullTurns - 1) * pi2 + v
-        }
-        else {
-          this.hourAngle = fullTurns * pi2 + v
-        }
+        this.hourAngle = this.getFancyRotatingAngle(this.hourAngle, v)
+      },
+
+      reshuffleNumbers() {
+        this.numberIndexes = getNumbers()
       },
     },
     computed: {
@@ -197,13 +208,13 @@
         return Math.floor(this.ms / 3600000 % 24)
       },
       realSecondAngle() {
-        return this.numberToIndex[this.second] / 30 * Math.PI
+        return this.numberIndexes[this.second] / 30 * Math.PI
       },
       realMinuteAngle() {
-        return this.numberToIndex[this.minute] / 30 * Math.PI
+        return this.numberIndexes[this.minute] / 30 * Math.PI
       },
       realHourAngle() {
-        return this.numberToIndex[this.hour] / 30 * Math.PI
+        return this.numberIndexes[this.hour] / 30 * Math.PI
       },
       secondPoint() {
         let a = this.secondAngleT
@@ -234,6 +245,10 @@
 
         return o
       },
+
+      realNumberAngles() {
+        return this.numberIndexes.map((index) => index/60 * 2*Math.PI)
+      }
     },
     tweened: {
       secondAngleT: {
@@ -241,10 +256,10 @@
           return this.secondAngle
         },
         duration() {
-          return 400;
+          return 400
         },
         easing(t) {
-          return t * (2 - t);
+          return t * (2 - t)
         }
       },
       minuteAngleT: {
@@ -252,10 +267,10 @@
           return this.minuteAngle
         },
         duration() {
-          return 400;
+          return 400
         },
         easing(t) {
-          return t * (2 - t);
+          return t * (2 - t)
         }
       },
       hourAngleT: {
@@ -263,14 +278,42 @@
           return this.hourAngle
         },
         duration() {
-          return 400;
+          return 400
         },
         easing(t) {
-          return t * (2 - t);
+          return t * (2 - t)
+        }
+      },
+
+      numberAnglesT: {
+        get() {
+          return this.numberAngles
+        },
+        duration() {
+          return 400
+        },
+        easing(t) {
+          return t * (2 - t)
         }
       }
     },
     watch: {
+      second() {
+        if (this.reshuffle === '1s') {
+          this.reshuffleNumbers()
+        }
+      },
+      minute() {
+        if (this.reshuffle === '1m') {
+          this.reshuffleNumbers()
+        }
+      },
+      hour() {
+        if (this.reshuffle === '1h') {
+          this.reshuffleNumbers()
+        }
+      },
+
       realSecondAngle(v) {
         this.updateSecondAngle(v)
       },
@@ -280,6 +323,15 @@
       realHourAngle(v) {
         this.updateHourAngle(v)
       },
+
+      realNumberAngles(v) {
+        const newNumberAngles = []
+        v.forEach((newAngle, i) => {
+          const oldAngle = this.numberAngles[i]
+          newNumberAngles.push(this.getFancyRotatingAngle(oldAngle, newAngle))
+        })
+        this.numberAngles = newNumberAngles
+      },
     },
     mounted() {
       this.updateTime()
@@ -287,6 +339,8 @@
       this.secondAngle = this.realSecondAngle
       this.minuteAngle = this.realMinuteAngle
       this.hourAngle = this.realHourAngle
+
+      this.numberAngles = this.realNumberAngles
 //      setInterval(() => {
 //        this.minute++
 //      }, 1000)
@@ -411,11 +465,23 @@
     flex-direction row
     justify-content space-between
 
-  .theme-switcher
+  .settings
     position fixed
     right 0
     top 0
-    padding 20px
+    padding 10px
+    display flex
+    flex-direction column
+    align-items flex-end
+
+  .settings__item
+    font-size 13px
+    &:not(:last-child)
+      padding-bottom 5px
+
+  select
+    font-family monospace
+    border none
 
   .default
     .svg
@@ -478,4 +544,8 @@
 
     .switch__content-inner-svg
       fill white
+
+    select
+      background-color black
+      color white
 </style>
